@@ -1,7 +1,9 @@
 package devs.astraweb.motoaccessoriesapi.controller;
 
+import devs.astraweb.motoaccessoriesapi.Dto.CheckoutRequest;
 import devs.astraweb.motoaccessoriesapi.Dto.OrderResponse;
 import devs.astraweb.motoaccessoriesapi.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,8 +22,9 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponse> checkout(Authentication authentication) {
-        OrderResponse response = orderService.checkout(authentication.getName());
+    public ResponseEntity<OrderResponse> checkout(Authentication authentication,
+                                                  @Valid @RequestBody CheckoutRequest request) {
+        OrderResponse response = orderService.checkout(authentication.getName(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

@@ -13,6 +13,10 @@ public class OrderResponse {
     private BigDecimal totalAmount;
     private String status;
     private LocalDateTime createdAt;
+    private String userName;
+    private String userEmail;
+    private String phone;
+    private String address;
     private List<OrderItemResponse> items;
 
     public OrderResponse() {
@@ -23,6 +27,10 @@ public class OrderResponse {
         this.totalAmount = order.getTotalAmount();
         this.status = order.getStatus().name();
         this.createdAt = order.getCreatedAt();
+        this.userName = order.getUser().getName();
+        this.userEmail = order.getUser().getEmail();
+        this.phone = order.getPhone();
+        this.address = order.getAddress();
         this.items = order.getItems().stream()
                 .map(OrderItemResponse::new)
                 .collect(Collectors.toList());
@@ -58,6 +66,38 @@ public class OrderResponse {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public List<OrderItemResponse> getItems() {

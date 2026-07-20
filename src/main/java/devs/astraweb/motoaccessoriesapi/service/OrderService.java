@@ -1,11 +1,13 @@
 package devs.astraweb.motoaccessoriesapi.service;
 
+import devs.astraweb.motoaccessoriesapi.Dto.CheckoutRequest;
 import devs.astraweb.motoaccessoriesapi.Dto.OrderResponse;
 import devs.astraweb.motoaccessoriesapi.model.*;
 import devs.astraweb.motoaccessoriesapi.repository.CartItemRepository;
 import devs.astraweb.motoaccessoriesapi.repository.OrderRepository;
 import devs.astraweb.motoaccessoriesapi.repository.ProductRepository;
 import devs.astraweb.motoaccessoriesapi.repository.UserRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,9 +24,9 @@ public class OrderService {
     private final UserRepository userRepository;
 
     public OrderService(OrderRepository orderRepository,
-                         CartItemRepository cartItemRepository,
-                         ProductRepository productRepository,
-                         UserRepository userRepository) {
+                        CartItemRepository cartItemRepository,
+                        ProductRepository productRepository,
+                        UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.cartItemRepository = cartItemRepository;
         this.productRepository = productRepository;
@@ -34,7 +36,7 @@ public class OrderService {
     // @Transactional ensures stock decrements, order creation, and cart clearing either
     // all succeed together or all roll back together - no partial checkout state.
     @Transactional
-    public OrderResponse checkout(String userEmail) {
+    public OrderResponse checkout(String userEmail, CheckoutRequest request) {
         User user = findUserByEmail(userEmail);
         List<CartItem> cartItems = cartItemRepository.findByUserId(user.getId());
 
@@ -55,6 +57,8 @@ public class OrderService {
 
         Order order = new Order();
         order.setUser(user);
+        order.setPhone(request.getPhone());
+        order.setAddress(request.getAddress());
 
         BigDecimal total = BigDecimal.ZERO;
         for (CartItem item : cartItems) {
@@ -95,6 +99,20 @@ public class OrderService {
         }
 
         return new OrderResponse(order);
+    }
+
+    public List<OrderResponse> getAllOrders() {
+        return orderRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")).stream()
+                .map(OrderResponse::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public OrderResponse updateOrderStatus(Long orderId, Order.Status status) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + orderId));
+        order.setStatus(status);
+        return new OrderResponse(orderRepository.save(order));
     }
 
     private User findUserByEmail(String email) {
