@@ -1,6 +1,7 @@
 package devs.astraweb.motoaccessoriesapi.Dto;
 
 import devs.astraweb.motoaccessoriesapi.model.User;
+import java.time.LocalDateTime;
 
 public class UserResponse {
 
@@ -8,6 +9,8 @@ public class UserResponse {
     private String name;
     private String email;
     private String role;
+    private long orderCount;
+    private LocalDateTime createdAt;
 
     public UserResponse() {
     }
@@ -17,6 +20,12 @@ public class UserResponse {
         this.name = user.getName();
         this.email = user.getEmail();
         this.role = user.getRole().name();
+        this.createdAt = user.getCreatedAt();
+    }
+
+    public UserResponse(User user, long orderCount) {
+        this(user);
+        this.orderCount = orderCount;
     }
 
     public Long getId() {
@@ -49,5 +58,21 @@ public class UserResponse {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public long getOrderCount() {
+        return orderCount;
+    }
+
+    public void setOrderCount(long orderCount) {
+        this.orderCount = orderCount;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

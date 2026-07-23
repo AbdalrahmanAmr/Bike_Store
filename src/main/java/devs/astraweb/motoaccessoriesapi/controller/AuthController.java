@@ -2,6 +2,7 @@ package devs.astraweb.motoaccessoriesapi.controller;
 
 import devs.astraweb.motoaccessoriesapi.Dto.LoginRequest;
 import devs.astraweb.motoaccessoriesapi.Dto.SignupRequest;
+import devs.astraweb.motoaccessoriesapi.Dto.UpdateProfileRequest;
 import devs.astraweb.motoaccessoriesapi.Dto.UserResponse;
 import devs.astraweb.motoaccessoriesapi.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,8 +32,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest request,
-                                               HttpServletRequest httpRequest,
-                                               HttpServletResponse httpResponse) {
+                                              HttpServletRequest httpRequest,
+                                              HttpServletResponse httpResponse) {
         UserResponse response = authService.login(request, httpRequest, httpResponse);
         return ResponseEntity.ok(response);
     }
@@ -49,6 +50,13 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
         UserResponse response = authService.getCurrentUser(authentication.getName());
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<UserResponse> updateProfile(Authentication authentication,
+                                                      @Valid @RequestBody UpdateProfileRequest request) {
+        UserResponse response = authService.updateProfile(authentication.getName(), request);
         return ResponseEntity.ok(response);
     }
 }

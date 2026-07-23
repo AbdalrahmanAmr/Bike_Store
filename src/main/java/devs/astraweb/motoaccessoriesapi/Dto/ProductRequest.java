@@ -17,6 +17,8 @@ public class ProductRequest {
     @PositiveOrZero
     private BigDecimal price;
 
+    private BigDecimal salePrice;
+
     private String brand;
 
     @NotNull
@@ -48,6 +50,14 @@ public class ProductRequest {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public BigDecimal getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(BigDecimal salePrice) {
+        this.salePrice = salePrice;
     }
 
     public String getBrand() {

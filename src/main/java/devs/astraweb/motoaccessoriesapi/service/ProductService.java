@@ -19,8 +19,8 @@ public class ProductService {
     private final FileStorageService fileStorageService;
 
     public ProductService(ProductRepository productRepository,
-                           CategoryRepository categoryRepository,
-                           FileStorageService fileStorageService) {
+                          CategoryRepository categoryRepository,
+                          FileStorageService fileStorageService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.fileStorageService = fileStorageService;
@@ -75,6 +75,7 @@ public class ProductService {
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
+        product.setSalePrice(request.getSalePrice());
         product.setBrand(request.getBrand());
         product.setCategory(category);
         product.setStockQuantity(request.getStockQuantity());
@@ -90,4 +91,3 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalArgumentException("Category not found with id: " + categoryId));
     }
 }
-

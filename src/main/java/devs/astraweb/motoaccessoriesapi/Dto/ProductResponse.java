@@ -10,6 +10,8 @@ public class ProductResponse {
     private String name;
     private String description;
     private BigDecimal price;
+    private BigDecimal salePrice;
+    private boolean onSale;
     private String brand;
     private CategoryResponse category;
     private String imageUrl;
@@ -23,6 +25,9 @@ public class ProductResponse {
         this.name = product.getName();
         this.description = product.getDescription();
         this.price = product.getPrice();
+        this.salePrice = product.getSalePrice();
+        this.onSale = product.getSalePrice() != null
+                && product.getSalePrice().compareTo(product.getPrice()) < 0;
         this.brand = product.getBrand();
         this.category = new CategoryResponse(product.getCategory());
         this.imageUrl = product.getImageUrl();
@@ -59,6 +64,22 @@ public class ProductResponse {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public BigDecimal getSalePrice() {
+        return salePrice;
+    }
+
+    public void setSalePrice(BigDecimal salePrice) {
+        this.salePrice = salePrice;
+    }
+
+    public boolean isOnSale() {
+        return onSale;
+    }
+
+    public void setOnSale(boolean onSale) {
+        this.onSale = onSale;
     }
 
     public String getBrand() {

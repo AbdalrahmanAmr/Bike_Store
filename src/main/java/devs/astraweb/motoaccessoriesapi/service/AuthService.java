@@ -2,6 +2,7 @@ package devs.astraweb.motoaccessoriesapi.service;
 
 import devs.astraweb.motoaccessoriesapi.Dto.LoginRequest;
 import devs.astraweb.motoaccessoriesapi.Dto.SignupRequest;
+import devs.astraweb.motoaccessoriesapi.Dto.UpdateProfileRequest;
 import devs.astraweb.motoaccessoriesapi.Dto.UserResponse;
 import devs.astraweb.motoaccessoriesapi.model.User;
 import devs.astraweb.motoaccessoriesapi.repository.UserRepository;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthService {
@@ -26,8 +28,8 @@ public class AuthService {
     private final SecurityContextRepository securityContextRepository = new HttpSessionSecurityContextRepository();
 
     public AuthService(UserRepository userRepository,
-                        PasswordEncoder passwordEncoder,
-                        AuthenticationManager authenticationManager) {
+                       PasswordEncoder passwordEncoder,
+                       AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
@@ -49,8 +51,6 @@ public class AuthService {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-        // Persist the authentication into the HttpSession so subsequent requests carrying
-        // the JSESSIONID cookie are recognized as authenticated.
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         SecurityContextHolder.setContext(context);
@@ -66,5 +66,27 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
         return new UserResponse(user);
+    }
+
+    @Transactional
+    public UserResponse updateProfile(String email, UpdateProfileRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
+
+        user.setName(request.getName());
+
+        boolean wantsPasswordChange = request.getNewPassword() != null && !request.getNewPassword().isBlank();
+        if (wantsPasswordChange) {
+            if (request.getCurrentPassword() == null || request.getCurrentPassword().isBlank()) {
+                throw new IllegalArgumentException("Current password is required to set a new password");
+            }
+            if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+                throw new IllegalArgumentException("Current password is incorrect");
+            }
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        }
+
+        User saved = userRepository.save(user);
+        return new UserResponse(saved);
     }
 }
