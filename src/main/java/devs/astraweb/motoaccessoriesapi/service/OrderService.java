@@ -63,11 +63,12 @@ public class OrderService {
         BigDecimal total = BigDecimal.ZERO;
         for (CartItem item : cartItems) {
             Product product = item.getProduct();
+            BigDecimal unitPrice = effectivePrice(product);
 
-            OrderItem orderItem = new OrderItem(product, item.getQuantity(), product.getPrice());
+            OrderItem orderItem = new OrderItem(product, item.getQuantity(), unitPrice);
             order.addItem(orderItem);
 
-            total = total.add(product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+            total = total.add(unitPrice.multiply(BigDecimal.valueOf(item.getQuantity())));
 
             product.setStockQuantity(product.getStockQuantity() - item.getQuantity());
             productRepository.save(product);
@@ -113,6 +114,17 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + orderId));
         order.setStatus(status);
         return new OrderResponse(orderRepository.save(order));
+    }
+
+    // Returns the sale price when the product is actually on sale (sale price set and lower
+    // than the regular price), otherwise the regular price. Mirrors ProductResponse's onSale logic
+    // so the price charged always matches what the customer saw on screen.
+    private BigDecimal effectivePrice(Product product) {
+        BigDecimal salePrice = product.getSalePrice();
+        if (salePrice != null && salePrice.compareTo(product.getPrice()) < 0) {
+            return salePrice;
+        }
+        return product.getPrice();
     }
 
     private User findUserByEmail(String email) {
