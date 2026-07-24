@@ -12,6 +12,7 @@ public class OrderResponse {
     private Long id;
     private BigDecimal totalAmount;
     private String status;
+    private String paymentMethod;
     private LocalDateTime createdAt;
     private String userName;
     private String userEmail;
@@ -26,6 +27,7 @@ public class OrderResponse {
         this.id = order.getId();
         this.totalAmount = order.getTotalAmount();
         this.status = order.getStatus().name();
+        this.paymentMethod = order.getPaymentMethod() != null ? order.getPaymentMethod().name() : null;
         this.createdAt = order.getCreatedAt();
         this.userName = order.getUser().getName();
         this.userEmail = order.getUser().getEmail();
@@ -58,6 +60,14 @@ public class OrderResponse {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public LocalDateTime getCreatedAt() {

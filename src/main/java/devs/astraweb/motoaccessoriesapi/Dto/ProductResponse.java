@@ -3,6 +3,7 @@ package devs.astraweb.motoaccessoriesapi.Dto;
 import devs.astraweb.motoaccessoriesapi.model.Product;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class ProductResponse {
 
@@ -14,7 +15,7 @@ public class ProductResponse {
     private boolean onSale;
     private String brand;
     private CategoryResponse category;
-    private String imageUrl;
+    private List<String> imageUrls;
     private Integer stockQuantity;
 
     public ProductResponse() {
@@ -30,7 +31,7 @@ public class ProductResponse {
                 && product.getSalePrice().compareTo(product.getPrice()) < 0;
         this.brand = product.getBrand();
         this.category = new CategoryResponse(product.getCategory());
-        this.imageUrl = product.getImageUrl();
+        this.imageUrls = product.getImageUrls();
         this.stockQuantity = product.getStockQuantity();
     }
 
@@ -98,12 +99,12 @@ public class ProductResponse {
         this.category = category;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public List<String> getImageUrls() {
+        return imageUrls;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageUrls(List<String> imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
     public Integer getStockQuantity() {

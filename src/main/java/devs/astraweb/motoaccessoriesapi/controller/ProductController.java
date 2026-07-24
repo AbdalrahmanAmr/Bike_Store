@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
@@ -38,8 +40,8 @@ public class ProductController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductResponse> create(
             @Valid @RequestPart("product") ProductRequest request,
-            @RequestPart(value = "image", required = false) MultipartFile image) {
-        ProductResponse response = productService.create(request, image);
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+        ProductResponse response = productService.create(request, images);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -47,8 +49,8 @@ public class ProductController {
     public ResponseEntity<ProductResponse> update(
             @PathVariable Long id,
             @Valid @RequestPart("product") ProductRequest request,
-            @RequestPart(value = "image", required = false) MultipartFile image) {
-        return ResponseEntity.ok(productService.update(id, request, image));
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+        return ResponseEntity.ok(productService.update(id, request, images));
     }
 
     @DeleteMapping("/{id}")
@@ -57,4 +59,3 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 }
-

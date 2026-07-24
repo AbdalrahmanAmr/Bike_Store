@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 public class ProductService {
 
@@ -35,30 +37,30 @@ public class ProductService {
         return new ProductResponse(findEntityById(id));
     }
 
-    public ProductResponse create(ProductRequest request, MultipartFile image) {
+    public ProductResponse create(ProductRequest request, List<MultipartFile> images) {
         Category category = findCategoryById(request.getCategoryId());
 
         Product product = new Product();
         applyRequest(product, request, category);
 
-        if (image != null && !image.isEmpty()) {
-            product.setImageUrl(fileStorageService.store(image));
+        if (images != null && !images.isEmpty()) {
+            product.setImageUrls(fileStorageService.storeAll(images));
         }
 
         Product saved = productRepository.save(product);
         return new ProductResponse(saved);
     }
 
-    public ProductResponse update(Long id, ProductRequest request, MultipartFile image) {
+    public ProductResponse update(Long id, ProductRequest request, List<MultipartFile> images) {
         Product product = findEntityById(id);
         Category category = findCategoryById(request.getCategoryId());
         applyRequest(product, request, category);
 
-        // Only replace the image if a new one was actually uploaded - otherwise keep the existing one
-        if (image != null && !image.isEmpty()) {
-            String oldImageUrl = product.getImageUrl();
-            product.setImageUrl(fileStorageService.store(image));
-            fileStorageService.delete(oldImageUrl);
+        // Only replace images if new ones were actually uploaded - otherwise keep the existing ones
+        if (images != null && !images.isEmpty()) {
+            List<String> oldImageUrls = product.getImageUrls();
+            product.setImageUrls(fileStorageService.storeAll(images));
+            fileStorageService.deleteAll(oldImageUrls);
         }
 
         Product saved = productRepository.save(product);
@@ -67,7 +69,7 @@ public class ProductService {
 
     public void delete(Long id) {
         Product product = findEntityById(id);
-        fileStorageService.delete(product.getImageUrl());
+        fileStorageService.deleteAll(product.getImageUrls());
         productRepository.delete(product);
     }
 

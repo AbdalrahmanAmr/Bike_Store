@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,6 +56,21 @@ public class FileStorageService {
         return "/uploads/products/" + filename;
     }
 
+    // Stores every non-empty file in the list and returns their relative URLs, in order.
+    // Skips null/empty entries instead of throwing, so one bad slot doesn't fail the whole batch.
+    public List<String> storeAll(List<MultipartFile> files) {
+        List<String> urls = new ArrayList<>();
+        if (files == null) {
+            return urls;
+        }
+        for (MultipartFile file : files) {
+            if (file != null && !file.isEmpty()) {
+                urls.add(store(file));
+            }
+        }
+        return urls;
+    }
+
     // Deletes the old image file when a product's image is replaced - best-effort, does not throw on failure
     public void delete(String relativeUrl) {
         if (relativeUrl == null || relativeUrl.isBlank()) {
@@ -65,6 +81,16 @@ public class FileStorageService {
             Files.deleteIfExists(uploadDir.resolve(filename));
         } catch (IOException ignored) {
             // Non-critical - an orphaned file on disk is not worth failing the request over
+        }
+    }
+
+    // Deletes every file in the list - best-effort, same semantics as delete()
+    public void deleteAll(List<String> relativeUrls) {
+        if (relativeUrls == null) {
+            return;
+        }
+        for (String url : relativeUrls) {
+            delete(url);
         }
     }
 }

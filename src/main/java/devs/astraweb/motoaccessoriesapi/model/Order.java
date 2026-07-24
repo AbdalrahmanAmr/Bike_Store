@@ -23,7 +23,11 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status = Status.PENDING;
+    private Status status = Status.Order_placed;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", nullable = false)
+    private PaymentMethod paymentMethod;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -72,6 +76,14 @@ public class Order {
         this.status = status;
     }
 
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -110,6 +122,10 @@ public class Order {
     }
 
     public enum Status {
-        PENDING, SHIPPED, CANCELLED
+        Order_placed, SHIPPED, CANCELLED
+    }
+
+    public enum PaymentMethod {
+        instapay, vodafone_cash, cash_on_delivery
     }
 }

@@ -59,6 +59,7 @@ public class OrderService {
         order.setUser(user);
         order.setPhone(request.getPhone());
         order.setAddress(request.getAddress());
+        order.setPaymentMethod(request.getPaymentMethod());
 
         BigDecimal total = BigDecimal.ZERO;
         for (CartItem item : cartItems) {
@@ -75,7 +76,7 @@ public class OrderService {
         }
 
         order.setTotalAmount(total);
-        order.setStatus(Order.Status.PENDING);
+        order.setStatus(Order.Status.Order_placed);
 
         Order saved = orderRepository.save(order);
         cartItemRepository.deleteByUserId(user.getId());
