@@ -15,9 +15,17 @@ public class OrderItem {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
+    // Nullable on purpose: if the product is later deleted (e.g. discontinued after being
+    // shipped), this FK is set to null via ON DELETE SET NULL, but the order history survives
+    // using the productName/priceAtPurchase snapshots below.
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id", nullable = true, foreignKey = @ForeignKey(name = "fk_order_items_product",
+            foreignKeyDefinition = "FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL"))
     private Product product;
+
+    // Snapshot of the product name at purchase time - survives product deletion, unlike product.getName()
+    @Column(name = "product_name", nullable = false)
+    private String productName;
 
     @Column(nullable = false)
     private Integer quantity;
@@ -31,6 +39,7 @@ public class OrderItem {
 
     public OrderItem(Product product, Integer quantity, BigDecimal priceAtPurchase) {
         this.product = product;
+        this.productName = product.getName();
         this.quantity = quantity;
         this.priceAtPurchase = priceAtPurchase;
     }
@@ -57,6 +66,14 @@ public class OrderItem {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public Integer getQuantity() {
