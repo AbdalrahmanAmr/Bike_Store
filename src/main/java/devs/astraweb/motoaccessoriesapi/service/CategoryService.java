@@ -5,11 +5,13 @@ import devs.astraweb.motoaccessoriesapi.Dto.CategoryResponse;
 import devs.astraweb.motoaccessoriesapi.model.Category;
 import devs.astraweb.motoaccessoriesapi.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;

@@ -2,6 +2,7 @@ package devs.astraweb.motoaccessoriesapi.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class FileStorageService {
 
     private static final List<String> ALLOWED_CONTENT_TYPES =

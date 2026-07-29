@@ -9,11 +9,13 @@ import devs.astraweb.motoaccessoriesapi.repository.ProductRepository;
 import devs.astraweb.motoaccessoriesapi.repository.UserRepository;
 import devs.astraweb.motoaccessoriesapi.repository.WishlistItemRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class WishlistService {
 
     private final WishlistItemRepository wishlistItemRepository;
