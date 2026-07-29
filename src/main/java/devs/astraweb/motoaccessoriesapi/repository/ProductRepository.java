@@ -9,13 +9,17 @@ import org.springframework.data.repository.query.Param;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    // categoryId and search are both optional (nullable) - pass null to skip that filter
+    // categoryId and search are both optional (nullable) - pass null to skip that filter.
+    // JOIN FETCH loads the Category eagerly in the same query, avoiding a LazyInitializationException
+    // if the session closes before ProductResponse touches product.getCategory() during serialization.
     @Query("""
-            SELECT p FROM Product p
+            SELECT DISTINCT p FROM Product p
+            JOIN FETCH p.category
+            LEFT JOIN FETCH p.imageUrls
             WHERE (:categoryId IS NULL OR p.category.id = :categoryId)
             AND (:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')))
             """)
     Page<Product> search(@Param("categoryId") Long categoryId,
-                          @Param("search") String search,
-                          Pageable pageable);
+                         @Param("search") String search,
+                         Pageable pageable);
 }
